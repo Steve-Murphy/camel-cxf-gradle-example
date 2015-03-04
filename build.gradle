@@ -1,0 +1,42 @@
+apply plugin: 'java'
+
+version = '1.0'
+sourceCompatibility = 1.7
+
+defaultTasks 'clean', 'build'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+ext {
+    camelVersion = '2.14.1'
+    cxfVersion = '3.0.2'
+    springVersion = '3.1.0.RELEASE'
+    slf4jVersion = '1.6.4'
+    junitVersion = '4.11'
+}
+
+dependencies {
+    compile "org.apache.camel:camel-core:${camelVersion}"
+    compile "org.apache.camel:camel-cxf:${camelVersion}"
+    compile "org.apache.cxf:cxf-rt-transports-http-jetty:${cxfVersion}"
+    compile "org.springframework:spring-context:${springVersion}"
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "org.slf4j:slf4j-simple:${slf4jVersion}"
+    testCompile "org.apache.camel:camel-test:${camelVersion}"
+    testCompile "org.springframework:spring-test:${springVersion}"
+    testCompile "junit:junit:${junitVersion}"
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'com.steve.research.CamelMain'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
